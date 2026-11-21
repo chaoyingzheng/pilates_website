@@ -3,7 +3,8 @@
 A studio website built around a **group class schedule with booking**: members book, join waitlists and cancel; admins manage the schedule, rosters, members and booking rules.
 
 - **Design & build plan:** [docs/DESIGN.md](docs/DESIGN.md)
-- **Clickable prototype:** [prototype/index.html](prototype/index.html)
+- **Clickable prototype (live):** https://chaoyingzheng.github.io/pilates_website/prototype/
+- **Prototype source:** [prototype/index.html](prototype/index.html)
 
 ## Try the prototype
 

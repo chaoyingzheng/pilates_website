@@ -1,0 +1,900 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Still Point Pilates — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF7F2; --surface:#FFFFFF; --soft:#F1E9DF; --text:#2B2724; --muted:#7A716A; --line:#E7DFD5;
+  --accent:#B4694A; --accent-ink:#FFFFFF; --ok:#4E7A57; --warn:#B07A2A; --danger:#A8463B;
+  --font-head:'Cormorant Garamond', Georgia, serif; --font-body:'Inter', system-ui, sans-serif;
+  --radius:4px; --btn-radius:999px; --head-weight:500;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3{font-family:var(--font-head);font-weight:var(--head-weight);line-height:1.1;margin:0 0 .4em}
+h1{font-size:clamp(40px,7vw,76px)} h2{font-size:clamp(30px,4.5vw,46px)} h3{font-size:24px}
+h1 em,h2 em{font-style:italic;color:var(--accent)}
+.eyebrow{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;font-weight:500}
+.eyebrow:before{content:"— "}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+.muted{color:var(--muted)} .small{font-size:13px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);padding:9px 18px;border-radius:var(--btn-radius);font:500 13px/1 var(--font-body);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{filter:brightness(.94)}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--text)}
+.btn.quiet{background:transparent;color:var(--text);border-color:var(--line)}
+.btn.danger{background:transparent;color:var(--danger);border-color:var(--danger)}
+.btn.sm{padding:6px 12px;font-size:11.5px}
+.btn[disabled]{opacity:.45;cursor:not-allowed;filter:none}
+.link{background:none;border:0;padding:0;font:500 12.5px var(--font-body);letter-spacing:.14em;text-transform:uppercase;cursor:pointer;color:var(--text);text-decoration:none;border-bottom:1px solid currentColor}
+.tag{display:inline-block;font:500 10.5px/1 var(--font-body);letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--line);color:var(--muted);padding:4px 7px;border-radius:var(--radius);vertical-align:middle}
+.tag.ok{color:var(--ok);border-color:currentColor} .tag.warn{color:var(--warn);border-color:currentColor} .tag.bad{color:var(--danger);border-color:currentColor}
+input,select,textarea{font:inherit;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:9px 11px;width:100%}
+input[type=checkbox]{width:auto}
+label{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+label.inline{display:inline-flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:14px;color:var(--text);margin:4px 12px 4px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-weight:500;text-align:left;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:10px 8px;border-bottom:1px solid var(--line)}
+td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tablewrap{overflow-x:auto}
+
+/* header */
+header.site{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.hbar{display:flex;align-items:center;gap:20px;height:66px}
+.logo{font-family:var(--font-head);font-size:25px;text-decoration:none;white-space:nowrap}
+.logo em{color:var(--accent)}
+nav.main{display:flex;gap:22px;flex:1;overflow-x:auto}
+nav.main a{text-decoration:none;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);white-space:nowrap;padding:4px 0}
+nav.main a.on,nav.main a:hover{color:var(--text)}
+.hright{display:flex;align-items:center;gap:10px}
+.roleswitch{font-size:12px;padding:6px 8px;width:auto;background:var(--soft);border-color:transparent}
+.protobar{background:var(--text);color:var(--bg);font-size:12px;text-align:center;padding:6px 16px}
+.protobar button{background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit}
+
+/* sections */
+section{padding:72px 0}
+.hero{padding:56px 0 72px}
+.herogrid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+.photo{border-radius:var(--radius);background:
+  radial-gradient(120% 80% at 20% 10%,color-mix(in srgb,var(--accent) 35%,transparent),transparent 60%),
+  radial-gradient(90% 90% at 90% 90%,color-mix(in srgb,var(--text) 22%,transparent),transparent 60%),
+  linear-gradient(160deg,var(--soft),color-mix(in srgb,var(--soft) 60%,var(--accent) 12%));
+  min-height:420px;position:relative;overflow:hidden}
+.photo span{position:absolute;bottom:14px;left:16px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.cards3{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
+.typecard{border-top:3px solid var(--c,var(--accent))}
+.lede{font-size:18px;color:var(--muted);max-width:560px}
+footer{border-top:1px solid var(--line);padding:40px 0;margin-top:40px;font-size:13px;color:var(--muted)}
+.footgrid{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}
+
+/* schedule */
+.schedhead{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:16px;margin-bottom:22px}
+.weeknav{display:flex;align-items:center;gap:8px}
+.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
+.day{background:none;border:0;border-right:1px solid var(--line);padding:12px 4px;cursor:pointer;font:inherit;color:var(--muted);text-align:center}
+.day:last-child{border-right:0}
+.day b{display:block;font-family:var(--font-head);font-size:26px;font-weight:500;color:var(--text);line-height:1.1}
+.day small{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase}
+.day.on{background:var(--text);color:var(--bg)} .day.on b{color:var(--bg)}
+.day.today small:after{content:" •";color:var(--accent)}
+.filters{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 6px}
+.filters select{width:auto;min-width:150px;font-size:13px}
+.rows{border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:120px 1fr 150px 140px;align-items:center;gap:16px;padding:18px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:hover{background:color-mix(in srgb,var(--soft) 50%,transparent)}
+.row.past{opacity:.5}
+.r-time b{display:block;font-weight:500} .r-time span{font-size:12.5px;color:var(--muted)}
+.r-name{font-family:var(--font-head);font-size:23px;line-height:1.15;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.r-meta{font-size:13px;color:var(--muted);margin-top:2px}
+.r-spots{font-size:13px;color:var(--muted)} .r-spots.low{color:var(--warn)} .r-spots.full{color:var(--danger)}
+.r-act{text-align:right}
+.empty{padding:48px 0;text-align:center;color:var(--muted)}
+
+/* admin */
+.admin{display:grid;grid-template-columns:210px 1fr;gap:32px;padding-top:32px;padding-bottom:60px}
+.side{display:flex;flex-direction:column;gap:2px;position:sticky;top:86px;align-self:start}
+.side a{text-decoration:none;padding:9px 12px;border-radius:var(--radius);font-size:14px;color:var(--muted)}
+.side a.on{background:var(--soft);color:var(--text);font-weight:500}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:22px}
+.twocol>*,.herogrid>*{min-width:0}
+.stat b{display:block;font-family:var(--font-head);font-size:38px;font-weight:500;line-height:1}
+.stat span{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.bar{height:6px;background:var(--soft);border-radius:9px;overflow:hidden;min-width:80px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.twocol{display:grid;grid-template-columns:1.3fr 1fr;gap:18px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.calwrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(130px,1fr));min-width:910px}
+.calcol{border-right:1px solid var(--line);min-height:380px}
+.calcol:last-child{border-right:0}
+.calcol h4{margin:0;padding:10px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;border-bottom:1px solid var(--line);color:var(--muted)}
+.calcol h4.today{color:var(--accent)}
+.ev{margin:6px;padding:7px 8px;border-radius:var(--radius);background:var(--soft);border-left:3px solid var(--c,var(--accent));font-size:12px;cursor:pointer;line-height:1.35}
+.ev b{display:block;font-weight:600}
+.ev.cx{opacity:.5;text-decoration:line-through}
+.log{font-size:13px;max-height:300px;overflow:auto}
+.log div{padding:7px 0;border-bottom:1px solid var(--line)}
+
+/* modal + toast */
+.modalbg{position:fixed;inset:0;background:rgba(20,18,16,.45);display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px;z-index:50;overflow:auto}
+.modal{background:var(--bg);border-radius:var(--radius);max-width:560px;width:100%;padding:28px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal .x{position:absolute;right:14px;top:10px;background:none;border:0;font-size:24px;cursor:pointer;color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+#toasts{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:60;width:min(440px,calc(100% - 32px))}
+.toast{background:var(--text);color:var(--bg);padding:11px 16px;border-radius:var(--radius);font-size:13.5px;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.toast.err{background:var(--danger);color:#fff}
+
+/* theme panel */
+#themeBtn{position:fixed;right:16px;bottom:16px;z-index:40;border-radius:999px;border:1px solid var(--line);background:var(--surface);padding:10px 14px;font:500 12px var(--font-body);cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+#themePanel{position:fixed;right:16px;bottom:64px;z-index:40;width:290px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;box-shadow:0 12px 40px rgba(0,0,0,.18);display:none}
+#themePanel.open{display:block}
+.preset{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:8px;cursor:pointer;font:inherit;color:var(--text)}
+.preset.on{outline:2px solid var(--accent)}
+.sw{display:flex} .sw i{width:16px;height:16px;border-radius:50%;margin-right:-4px;border:1px solid rgba(0,0,0,.1)}
+
+@media (max-width:1040px){ .admin .twocol{grid-template-columns:1fr} }
+@media (max-width:860px){
+  .herogrid,.twocol{grid-template-columns:1fr}
+  .photo{min-height:260px}
+  .admin{grid-template-columns:1fr;gap:16px;padding-top:16px}
+  .side{position:static;flex-direction:row;overflow-x:auto;border-bottom:1px solid var(--line);padding-bottom:8px}
+  .side a{white-space:nowrap}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:640px){
+  .hbar{flex-wrap:wrap;height:auto;padding-top:10px;padding-bottom:10px;gap:8px 14px}
+  nav.main{order:3;flex-basis:100%;gap:18px}
+  .hright{margin-left:auto}
+  .hright .btn{display:none}
+  section{padding:48px 0}
+  .row{grid-template-columns:76px 1fr;gap:4px 12px;padding:14px 2px}
+  .r-spots{grid-column:2}
+  .r-act{grid-column:1/-1;text-align:left;margin-top:6px}
+  .r-name{font-size:20px}
+  .day{padding:10px 0} .day b{font-size:20px} .day small{font-size:9px;letter-spacing:.08em}
+  .grid2{grid-template-columns:1fr}
+  .modal{padding:22px 18px}
+  .filters select{flex:1;min-width:0}
+}
+</style>
+</head>
+<body>
+<div class="protobar">Clickable prototype. Data lives in this browser only. <button onclick="resetDemo()">Reset demo data</button></div>
+<header class="site"><div class="wrap hbar" id="header"></div></header>
+<main id="app"></main>
+<footer><div class="wrap footgrid" id="footer"></div></footer>
+<div id="toasts"></div>
+<button id="themeBtn" onclick="document.getElementById('themePanel').classList.toggle('open')">◐ Theme</button>
+<div id="themePanel"></div>
+
+<script>
+/* ---------- utilities ---------- */
+const H = 3600e3, DAY = 864e5;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = p => (p||'') + Math.random().toString(36).slice(2, 9);
+const sod = d => { const x = new Date(d); x.setHours(0,0,0,0); return x.getTime(); };
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x.getTime(); };
+const mondayOf = d => { const x = new Date(sod(d)); const wd = (x.getDay() + 6) % 7; return addDays(x, -wd); };
+const fmtTime = t => new Date(t).toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'}).replace(' ', '').toLowerCase();
+const fmtDate = t => new Date(t).toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+const fmtLong = t => new Date(t).toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
+const fmtAgo = t => { const m = Math.round((Date.now() - t) / 6e4); return m < 1 ? 'just now' : m < 60 ? m + 'm ago' : m < 1440 ? Math.round(m/60) + 'h ago' : Math.round(m/1440) + 'd ago'; };
+const toInputDate = t => { const d = new Date(t); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); };
+const toInputTime = t => { const d = new Date(t); return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); };
+const fromInputs = (date, time) => { const [y,m,d] = date.split('-').map(Number); const [hh,mm] = time.split(':').map(Number); return new Date(y, m-1, d, hh, mm).getTime(); };
+function rng(seed){ return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
+
+/* ---------- data ---------- */
+const KEY = 'sp_proto_v1', UIKEY = 'sp_proto_ui_v1';
+let st, ui;
+
+function seed(){
+  const r = rng(42), now = Date.now(), today = sod(now);
+  const s = {
+    settings:{name:'Still Point Pilates', tagline:'Move with intention, live in balance', address:'1200 Alder Street, Suite 3', email:'hello@stillpoint.example', phone:'(555) 010-2024', windowDays:14, cutoffHours:12, maxActive:8},
+    instructors:[
+      {id:'i1', name:'Ava Morales', bio:'Classically trained and comprehensively certified. Known for precise cueing and a calm, unhurried room.', active:true},
+      {id:'i2', name:'Jordan Lee', bio:'Former contemporary dancer. Flowing reformer sequences built on control and breath.', active:true},
+      {id:'i3', name:'Priya Nair', bio:'Rehab-informed teacher who loves foundations, mobility and helping first-timers feel at home.', active:true},
+    ],
+    classTypes:[
+      {id:'c1', name:'Mat Foundations', level:'Foundations', duration:50, capacity:10, color:'#B9A48A', description:'The core principles on the mat: breath, alignment and control. The best place to start.'},
+      {id:'c2', name:'Reformer Flow', level:'Level 1', duration:50, capacity:8, color:'#B4694A', description:'A full-body reformer class that links classical exercises into a steady flow.'},
+      {id:'c3', name:'Reformer Sculpt', level:'Level 2', duration:55, capacity:8, color:'#6F8466', description:'Higher tempo and added load for experienced students. Reformer experience required.'},
+      {id:'c4', name:'Tower & Stretch', level:'All levels', duration:45, capacity:6, color:'#7C8BA1', description:'Spring-assisted work on the tower followed by long, slow stretching.'},
+    ],
+    users:[], series:[], sessions:[], bookings:[], log:[], outbox:[]
+  };
+  s.users.push({id:'a1', name:'Studio Admin', email:'admin@stillpoint.example', phone:'', role:'ADMIN', active:true, created:addDays(today,-200)});
+  s.users.push({id:'u1', name:'Mia Chen', email:'mia@example.com', phone:'(555) 201-3344', role:'MEMBER', active:true, created:addDays(today,-90)});
+  const names = ['Noah Kim','Emma Rossi','Liam Patel','Olivia Brooks','Lucas Wang','Sofia Garcia','Ethan Novak','Chloe Martin','Mason Reyes','Grace Okafor','Leo Silva','Hannah Weiss','Aria Shah','Owen Clarke','Zoe Laurent','Isaac Romero','Nora Lindqvist','Kai Tanaka','Ruby Adams','Felix Moreau'];
+  names.forEach((n,i) => s.users.push({id:'u'+(i+2), name:n, email:n.toLowerCase().replace(' ','.')+'@example.com', phone:'', role:'MEMBER', active:true, created:addDays(today,-10-i*7)}));
+  const others = s.users.filter(u => u.role === 'MEMBER' && u.id !== 'u1').map(u => u.id);
+
+  const wk = [[7,0,'c2','i2'],[9,30,'c1','i3'],[12,0,'c3','i1'],[17,30,'c2','i1'],[18,45,'c4','i2']];
+  const tpl = {0:[[9,0,'c4','i3'],[10,15,'c2','i1']], 6:[[8,0,'c2','i2'],[9,15,'c1','i3'],[10,30,'c3','i1']]};
+  for (let d = -5; d <= 17; d++){
+    const day = addDays(today, d), wd = new Date(day).getDay();
+    (tpl[wd] || wk).forEach(([h,m,tid,iid]) => {
+      const ct = s.classTypes.find(c => c.id === tid);
+      const start = new Date(day); start.setHours(h, m, 0, 0);
+      s.sessions.push({id:uid('s'), typeId:tid, instructorId:iid, start:start.getTime(), end:start.getTime() + ct.duration*6e4, capacity:ct.capacity, room:tid==='c1'?'Mat Room':'Studio A', status:'SCHEDULED', seriesId:null});
+    });
+  }
+  s.sessions.sort((a,b) => a.start - b.start);
+  // fill bookings
+  s.sessions.forEach(ss => {
+    const daysOut = (ss.start - now) / DAY;
+    let fill = daysOut < 0 ? 0.5 + r()*0.5 : daysOut < 4 ? 0.4 + r()*0.75 : daysOut < 9 ? 0.15 + r()*0.5 : r()*0.25;
+    let n = Math.min(Math.round(ss.capacity * fill), ss.capacity + 2);
+    const pool = [...others].sort(() => r() - .5);
+    for (let i = 0; i < n; i++){
+      const past = ss.end < now, wl = i >= ss.capacity;
+      s.bookings.push({id:uid('b'), userId:pool[i], sessionId:ss.id, status: wl ? (past ? 'CANCELLED' : 'WAITLISTED') : past ? (r() < .9 ? 'ATTENDED' : 'NO_SHOW') : 'CONFIRMED', createdAt: ss.start - (3 + r()*200)*H + i*6e4, cancelledAt:null});
+    }
+  });
+  // Mia's bookings: past attended, upcoming confirmed, one waitlist on a full class
+  const fut = s.sessions.filter(x => x.start > now + 14*H);
+  const past = s.sessions.filter(x => x.end < now);
+  const miaBook = (ss, status) => { s.bookings = s.bookings.filter(b => !(b.sessionId === ss.id && b.userId === 'u1')); s.bookings.push({id:uid('b'), userId:'u1', sessionId:ss.id, status, createdAt: ss.start - 50*H, cancelledAt:null}); };
+  past.slice(-9).filter((_, i) => i % 3 === 0).forEach(x => miaBook(x, 'ATTENDED'));
+  const reformers = fut.filter(x => x.typeId === 'c2');
+  if (reformers[0]) miaBook(reformers[0], 'CONFIRMED');
+  if (fut[6]) miaBook(fut[6], 'CONFIRMED');
+  const fullOne = fut.find(x => x.typeId === 'c3' && x !== fut[6]);
+  if (fullOne){ // make it full with a waitlist, Mia #2
+    s.bookings = s.bookings.filter(b => b.sessionId !== fullOne.id);
+    others.slice(0, fullOne.capacity).forEach((u, i) => s.bookings.push({id:uid('b'), userId:u, sessionId:fullOne.id, status:'CONFIRMED', createdAt:fullOne.start - 90*H + i*6e4, cancelledAt:null}));
+    s.bookings.push({id:uid('b'), userId:others[15], sessionId:fullOne.id, status:'WAITLISTED', createdAt:fullOne.start - 60*H, cancelledAt:null});
+    s.bookings.push({id:uid('b'), userId:'u1', sessionId:fullOne.id, status:'WAITLISTED', createdAt:fullOne.start - 59*H, cancelledAt:null});
+  }
+  s.log.push({t:now - 3*H, text:'Demo data loaded'});
+  return s;
+}
+
+function load(){
+  try { st = JSON.parse(localStorage.getItem(KEY)); } catch(e) { st = null; }
+  if (!st || !st.sessions) { st = seed(); save(); }
+  try { ui = JSON.parse(localStorage.getItem(UIKEY)) || {}; } catch(e) { ui = {}; }
+  ui = Object.assign({userId:null, weekOffset:0, day:sod(Date.now()), f:{type:'', inst:'', level:''}, adminWeek:0, theme:'sand'}, ui);
+  if (ui.day < mondayOf(Date.now()) - 7*DAY) ui.day = sod(Date.now());
+}
+function save(){
+  try { localStorage.setItem(KEY, JSON.stringify(st)); localStorage.setItem(UIKEY, JSON.stringify(ui)); } catch(e) {}
+}
+function resetDemo(){
+  if (!confirm('Reset all demo data back to the start?')) return;
+  st = seed(); ui.day = sod(Date.now()); ui.weekOffset = 0; ui.adminWeek = 0; save(); render(); toast('Demo data reset');
+}
+
+/* ---------- lookups ---------- */
+const byId = (list, id) => list.find(x => x.id === id);
+const user = id => byId(st.users, id);
+const type = id => byId(st.classTypes, id) || {name:'(deleted type)', level:'', color:'#999', duration:50};
+const inst = id => byId(st.instructors, id) || {name:'(removed)'};
+const sess = id => byId(st.sessions, id);
+const me = () => ui.userId ? user(ui.userId) : null;
+const isAdmin = () => me()?.role === 'ADMIN';
+const SEATED = ['CONFIRMED','ATTENDED','NO_SHOW'];
+const seated = sid => st.bookings.filter(b => b.sessionId === sid && SEATED.includes(b.status));
+const waitlist = sid => st.bookings.filter(b => b.sessionId === sid && b.status === 'WAITLISTED').sort((a,b) => a.createdAt - b.createdAt);
+const myBooking = (uidv, sid) => st.bookings.find(b => b.sessionId === sid && b.userId === uidv && b.status !== 'CANCELLED');
+const wlPos = b => waitlist(b.sessionId).findIndex(x => x.id === b.id) + 1;
+const windowEnd = () => Date.now() + st.settings.windowDays * DAY;
+const levels = () => [...new Set(st.classTypes.map(c => c.level))];
+
+/* ---------- booking rules ---------- */
+function log(text){ st.log.unshift({t:Date.now(), text}); st.log = st.log.slice(0, 80); }
+function email(uidv, subject, body){
+  const u = user(uidv); if (!u) return;
+  st.outbox.unshift({t:Date.now(), to:u.email, name:u.name, subject, body}); st.outbox = st.outbox.slice(0, 60);
+}
+function sessLabel(s){ return `${type(s.typeId).name}, ${fmtDate(s.start)} ${fmtTime(s.start)}`; }
+
+function book(uidv, sid, opts = {}){
+  const s = sess(sid), u = user(uidv);
+  if (!s || s.status === 'CANCELLED') return {ok:false, msg:'This class was cancelled.'};
+  if (!u || !u.active) return {ok:false, msg:'This account is deactivated.'};
+  if (!opts.admin && s.start <= Date.now()) return {ok:false, msg:'This class has already started.'};
+  if (!opts.admin && s.start > windowEnd()) return {ok:false, msg:`Booking opens ${st.settings.windowDays} days before class.`};
+  if (myBooking(uidv, sid)) return {ok:false, msg:`${opts.admin ? u.name + ' is' : "You're"} already on this class.`};
+  if (!opts.admin){
+    const active = st.bookings.filter(b => b.userId === uidv && ['CONFIRMED','WAITLISTED'].includes(b.status) && sess(b.sessionId)?.start > Date.now()).length;
+    if (active >= st.settings.maxActive) return {ok:false, msg:`You can hold at most ${st.settings.maxActive} upcoming bookings.`};
+  }
+  const full = seated(sid).length >= s.capacity && !opts.force;
+  const b = {id:uid('b'), userId:uidv, sessionId:sid, status: full ? 'WAITLISTED' : 'CONFIRMED', createdAt:Date.now(), cancelledAt:null};
+  st.bookings.push(b);
+  if (opts.force && seated(sid).length > s.capacity) s.capacity = seated(sid).length;
+  log(`${u.name} ${full ? 'joined the waitlist for' : 'booked'} ${sessLabel(s)}${opts.admin ? ' (added by admin)' : ''}`);
+  email(uidv, full ? `You're on the waitlist: ${type(s.typeId).name}` : `Booking confirmed: ${type(s.typeId).name}`,
+    full ? `You're #${wlPos(b)} on the waitlist for ${sessLabel(s)}. We'll email you if a spot opens.` : `See you ${fmtLong(s.start)} at ${fmtTime(s.start)} with ${inst(s.instructorId).name}.`);
+  return {ok:true, booking:b, msg: full ? `You're #${wlPos(b)} on the waitlist` : 'Booked. See you there!'};
+}
+
+function cancelBooking(bid, opts = {}){
+  const b = byId(st.bookings, bid); if (!b) return {ok:false, msg:'Booking not found.'};
+  const s = sess(b.sessionId), u = user(b.userId);
+  if (!opts.admin && b.status === 'CONFIRMED' && s.start - Date.now() < st.settings.cutoffHours * H)
+    return {ok:false, msg:`Cancellations close ${st.settings.cutoffHours}h before class. Please contact the studio.`};
+  const was = b.status;
+  b.status = 'CANCELLED'; b.cancelledAt = Date.now();
+  log(`${u.name} ${was === 'WAITLISTED' ? 'left the waitlist for' : 'cancelled'} ${sessLabel(s)}${opts.admin ? ' (by admin)' : ''}`);
+  if (opts.admin) email(b.userId, `Booking removed: ${type(s.typeId).name}`, `The studio removed your booking for ${sessLabel(s)}.`);
+  promote(s.id);
+  return {ok:true, msg: was === 'WAITLISTED' ? 'You left the waitlist' : 'Booking cancelled'};
+}
+
+function promote(sid){
+  const s = sess(sid); if (!s || s.status === 'CANCELLED' || s.start <= Date.now()) return [];
+  const promoted = [];
+  let wl = waitlist(sid);
+  while (seated(sid).length < s.capacity && wl.length){
+    const w = wl.shift(); w.status = 'CONFIRMED'; promoted.push(w);
+    log(`${user(w.userId).name} moved from waitlist into ${sessLabel(s)}`);
+    email(w.userId, `A spot opened up: ${type(s.typeId).name}`, `Good news! You're now booked for ${sessLabel(s)}.`);
+    toast(`📧 Emailed ${user(w.userId).name}: they moved off the waitlist`);
+  }
+  return promoted;
+}
+
+function cancelSession(sid){
+  const s = sess(sid); s.status = 'CANCELLED';
+  st.bookings.filter(b => b.sessionId === sid && ['CONFIRMED','WAITLISTED'].includes(b.status)).forEach(b => {
+    b.status = 'CANCELLED'; b.cancelledAt = Date.now();
+    email(b.userId, `Class cancelled: ${type(s.typeId).name}`, `We're sorry, ${sessLabel(s)} has been cancelled.`);
+  });
+  log(`Admin cancelled ${sessLabel(s)}`);
+}
+
+/* ---------- toast & modal ---------- */
+function toast(msg, err){ const t = document.createElement('div'); t.className = 'toast' + (err ? ' err' : ''); t.textContent = msg; $('toasts').appendChild(t); setTimeout(() => t.remove(), 3800); }
+function openModal(html){ closeModal(); const bg = document.createElement('div'); bg.className = 'modalbg'; bg.id = 'modal'; bg.innerHTML = `<div class="modal" role="dialog"><button class="x" onclick="closeModal()" aria-label="Close">×</button>${html}</div>`; bg.addEventListener('mousedown', e => { if (e.target === bg) closeModal(); }); document.body.appendChild(bg); }
+function closeModal(){ $('modal')?.remove(); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+function result(r){ toast(r.msg, !r.ok); if (r.ok){ save(); render(); } return r.ok; }
+
+/* ---------- router ---------- */
+function go(h){ location.hash = h; }
+window.addEventListener('hashchange', () => { closeModal(); render(); window.scrollTo(0,0); });
+
+function render(){
+  const path = (location.hash.slice(1) || '/').split('?')[0];
+  const parts = path.split('/').filter(Boolean);
+  renderHeader(parts[0] || '');
+  let html;
+  if (parts[0] === 'admin'){
+    if (!isAdmin()) html = gate('Admin area', 'This area is for studio staff. Switch to the Admin role (top right) to continue.');
+    else html = adminShell(parts[1] || 'dashboard', parts[2]);
+  } else if (parts[0] === 'account'){
+    html = me() && !isAdmin() ? viewAccount() : me() ? gate('My account', 'You are signed in as an admin. Switch to the Member role to see a member’s account.') : viewLogin('account');
+  } else {
+    html = ({'':viewHome, schedule:viewSchedule, classes:viewClasses, instructors:viewInstructors, contact:viewContact, login:() => viewLogin(), register:viewRegister}[parts[0]] || viewHome)();
+  }
+  $('app').innerHTML = html;
+  renderFooter(); renderTheme();
+}
+function gate(title, msg){ return `<section><div class="wrap" style="max-width:560px"><div class="eyebrow">Restricted</div><h2>${title}</h2><p class="muted">${msg}</p></div></section>`; }
+
+function renderHeader(cur){
+  const u = me();
+  const links = [['schedule','Schedule'],['classes','Classes'],['instructors','Instructors'],['contact','Contact']];
+  if (u && !isAdmin()) links.push(['account','My account']);
+  if (isAdmin()) links.push(['admin','Admin']);
+  $('header').innerHTML = `
+    <a class="logo" href="#/">Still <em>Point</em></a>
+    <nav class="main">${links.map(([h,l]) => `<a href="#/${h}" class="${cur === h ? 'on' : ''}">${l}</a>`).join('')}</nav>
+    <div class="hright">
+      <select class="roleswitch" onchange="switchRole(this.value)" title="Prototype role switcher">
+        <option value="" ${!u ? 'selected' : ''}>View as: Guest</option>
+        ${u && u.role === 'MEMBER' && u.id !== 'u1' ? `<option value="${u.id}" selected>Member: ${esc(u.name)}</option>` : ''}
+        <option value="u1" ${ui.userId === 'u1' ? 'selected' : ''}>Member: Mia Chen</option>
+        <option value="a1" ${ui.userId === 'a1' ? 'selected' : ''}>Admin</option>
+      </select>
+      <a class="btn" href="#/schedule">Book a class</a>
+    </div>`;
+}
+function switchRole(v){ ui.userId = v || null; save(); toast(v ? `Signed in as ${user(v).name}` : 'Signed out'); if (!v && /^#\/(admin|account)/.test(location.hash)) go('/'); else render(); }
+function renderFooter(){
+  const s = st.settings;
+  $('footer').innerHTML = `<div><div class="logo" style="font-size:22px">Still <em>Point</em> Pilates</div><div>${esc(s.tagline)}</div></div>
+    <div>${esc(s.address)}<br>${esc(s.phone)} · ${esc(s.email)}</div>
+    <div>Mon–Fri 6:30am–8pm<br>Sat–Sun 7:30am–12pm</div>`;
+}
+
+/* ---------- public views ---------- */
+function upcomingSessions(filterFn = () => true){ return st.sessions.filter(s => s.start > Date.now() && s.status !== 'CANCELLED' && filterFn(s)).sort((a,b) => a.start - b.start); }
+
+function viewHome(){
+  const s = st.settings, next = upcomingSessions().slice(0, 4);
+  return `
+  <section class="hero"><div class="wrap herogrid">
+    <div>
+      <div class="eyebrow">${esc(s.name)}</div>
+      <h1>Find your <em>center</em>, one class at a time</h1>
+      <p class="lede">Small group reformer and mat classes, taught with care. Never more than ten people in the room.</p>
+      <div class="actions" style="margin-top:28px;align-items:center;gap:22px">
+        <a class="btn" href="#/schedule">View schedule</a>
+        <a class="link" href="#/classes">New here? Start with Foundations →</a>
+      </div>
+    </div>
+    <div class="photo"><span>Studio photo</span></div>
+  </div></section>
+
+  <section style="background:var(--surface);border-block:1px solid var(--line)"><div class="wrap">
+    <div class="schedhead"><div><div class="eyebrow">Up next</div><h2>Book your <em>next</em> class</h2></div><a class="link" href="#/schedule">Full schedule →</a></div>
+    <div class="rows">${next.map(rowHtml).join('') || '<div class="empty">No upcoming classes.</div>'}</div>
+  </div></section>
+
+  <section><div class="wrap">
+    <div class="eyebrow">The classes</div><h2>A practice for <em>every</em> body</h2>
+    <div class="cards3" style="margin-top:28px">${st.classTypes.map(c => `
+      <div class="card typecard" style="--c:${c.color}"><span class="tag">${esc(c.level)}</span><h3 style="margin-top:12px">${esc(c.name)}</h3><p class="muted small">${esc(c.description)}</p><div class="small muted">${c.duration} min · up to ${c.capacity} people</div></div>`).join('')}
+    </div>
+  </div></section>
+
+  <section style="padding-top:0"><div class="wrap">
+    <div class="eyebrow">The teachers</div><h2>Meet the <em>instructors</em></h2>
+    <div class="cards3" style="margin-top:28px">${st.instructors.filter(i => i.active).map(instCard).join('')}</div>
+  </div></section>`;
+}
+function instCard(i){ return `<div><div class="photo" style="min-height:260px"><span>${esc(i.name)}</span></div><h3 style="margin-top:14px">${esc(i.name)}</h3><p class="muted small">${esc(i.bio)}</p></div>`; }
+
+function viewSchedule(){
+  const wkStart = addDays(mondayOf(Date.now()), ui.weekOffset * 7);
+  if (ui.day < wkStart || ui.day >= addDays(wkStart, 7)) ui.day = ui.weekOffset === 0 ? sod(Date.now()) : wkStart;
+  const today = sod(Date.now());
+  const days = [...Array(7)].map((_, i) => addDays(wkStart, i));
+  const f = ui.f;
+  const list = st.sessions.filter(s => sod(s.start) === ui.day && (!f.type || s.typeId === f.type) && (!f.inst || s.instructorId === f.inst) && (!f.level || type(s.typeId).level === f.level)).sort((a,b) => a.start - b.start);
+  const maxOffset = Math.ceil((windowEnd() - mondayOf(Date.now())) / (7*DAY)) - 1;
+  return `<section style="padding-top:44px"><div class="wrap">
+    <div class="schedhead">
+      <div><div class="eyebrow">Schedule</div><h2>Book your <em>Pilates</em> class</h2></div>
+      <div class="weeknav">
+        <button class="btn quiet sm" ${ui.weekOffset <= -1 ? 'disabled' : ''} onclick="ui.weekOffset--;ui.day=0;save();render()">← Prev week</button>
+        <button class="btn quiet sm" ${ui.weekOffset >= maxOffset ? 'disabled' : ''} onclick="ui.weekOffset++;ui.day=0;save();render()">Next week →</button>
+      </div>
+    </div>
+    <div class="days">${days.map(d => `<button class="day ${d === ui.day ? 'on' : ''} ${d === today ? 'today' : ''}" onclick="ui.day=${d};save();render()"><small>${new Date(d).toLocaleDateString('en-US',{weekday:'short'})}</small><b>${new Date(d).getDate()}</b></button>`).join('')}</div>
+    <div class="filters">
+      <select onchange="ui.f.type=this.value;save();render()"><option value="">All classes</option>${st.classTypes.map(c => `<option value="${c.id}" ${f.type === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select>
+      <select onchange="ui.f.inst=this.value;save();render()"><option value="">All instructors</option>${st.instructors.map(i => `<option value="${i.id}" ${f.inst === i.id ? 'selected' : ''}>${esc(i.name)}</option>`).join('')}</select>
+      <select onchange="ui.f.level=this.value;save();render()"><option value="">All levels</option>${levels().map(l => `<option ${f.level === l ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>
+      ${f.type || f.inst || f.level ? `<button class="link" onclick="ui.f={type:'',inst:'',level:''};save();render()">Clear filters</button>` : ''}
+    </div>
+    <h3 style="margin:26px 0 10px">${fmtLong(ui.day)}</h3>
+    <div class="rows">${list.map(rowHtml).join('') || '<div class="empty">No classes on this day' + (f.type||f.inst||f.level ? ' match your filters' : '') + '.</div>'}</div>
+    <p class="small muted" style="margin-top:18px">Booking opens ${st.settings.windowDays} days ahead. Cancel up to ${st.settings.cutoffHours} hours before class. When a class is full, join the waitlist and we'll email you if a spot opens.</p>
+  </div></section>`;
+}
+
+function rowState(s){
+  const u = me(), now = Date.now(), n = seated(s.id).length, left = s.capacity - n, wl = waitlist(s.id).length;
+  const b = u ? myBooking(u.id, s.id) : null;
+  let spots = '', cls = '';
+  if (s.status === 'CANCELLED') { spots = 'Cancelled'; cls = 'full'; }
+  else if (s.end < now) spots = 'Ended';
+  else if (left <= 0) { spots = `Full${wl ? ` · ${wl} on waitlist` : ''}`; cls = 'full'; }
+  else if (left <= 3) { spots = `${left} spot${left > 1 ? 's' : ''} left`; cls = 'low'; }
+  else spots = isAdmin() ? `${n}/${s.capacity} booked` : '';
+  let btn;
+  if (isAdmin()) btn = `<a class="btn quiet sm" href="#/admin/session/${s.id}" onclick="event.stopPropagation()">Roster →</a>`;
+  else if (s.status === 'CANCELLED') btn = `<span class="tag bad">Cancelled</span>`;
+  else if (b && b.status === 'WAITLISTED') btn = `<span class="tag warn">Waitlist #${wlPos(b)}</span>`;
+  else if (b) btn = `<span class="tag ok">${b.status === 'ATTENDED' ? 'Attended' : 'Booked ✓'}</span>`;
+  else if (s.start <= now) btn = '';
+  else if (s.start > windowEnd()) btn = `<button class="btn quiet sm" disabled>Opens ${fmtDate(s.start - st.settings.windowDays*DAY)}</button>`;
+  else if (left <= 0) btn = `<button class="btn ghost sm" onclick="event.stopPropagation();quickBook('${s.id}')">Waitlist</button>`;
+  else btn = `<button class="btn sm" onclick="event.stopPropagation();quickBook('${s.id}')">Reserve</button>`;
+  return {spots, cls, btn};
+}
+function rowHtml(s){
+  const c = type(s.typeId), r = rowState(s);
+  return `<div class="row ${s.end < Date.now() || s.status === 'CANCELLED' ? 'past' : ''}" onclick="openSession('${s.id}')">
+    <div class="r-time"><b>${fmtTime(s.start)}</b><span>${c.duration} min</span></div>
+    <div><div class="r-name">${esc(c.name)} <span class="tag">${esc(c.level)}</span></div><div class="r-meta">${esc(inst(s.instructorId).name)} · ${esc(s.room || '')}${location.hash.includes('schedule') ? '' : ' · ' + fmtDate(s.start)}</div></div>
+    <div class="r-spots ${r.cls}">${r.spots}</div>
+    <div class="r-act">${r.btn}</div>
+  </div>`;
+}
+function quickBook(sid){
+  if (!me()){ ui.pending = sid; save(); toast('Log in or create an account to book'); go('/login'); return; }
+  result(book(me().id, sid));
+}
+function openSession(sid){
+  const s = sess(sid), c = type(s.typeId), i = inst(s.instructorId), u = me(), r = rowState(s);
+  const b = u && !isAdmin() ? myBooking(u.id, s.id) : null;
+  let actions = '';
+  if (isAdmin()) actions = `<a class="btn" href="#/admin/session/${s.id}">Open roster</a>`;
+  else if (b && ['CONFIRMED','WAITLISTED'].includes(b.status) && s.start > Date.now()){
+    const late = b.status === 'CONFIRMED' && s.start - Date.now() < st.settings.cutoffHours * H;
+    actions = `<button class="btn danger" ${late ? 'disabled' : ''} onclick="if(result(cancelBooking('${b.id}')))closeModal()">${b.status === 'WAITLISTED' ? 'Leave waitlist' : 'Cancel booking'}</button>
+      ${b.status === 'CONFIRMED' ? `<button class="btn quiet" onclick="downloadIcs('${s.id}')">Add to calendar</button>` : ''}
+      ${late ? `<p class="small muted" style="flex-basis:100%">Online cancellation closed ${st.settings.cutoffHours}h before class. Contact the studio at ${esc(st.settings.phone)}.</p>` : ''}`;
+  } else if (r.btn.includes('quickBook')) actions = r.btn.replace('btn sm', 'btn').replace('btn ghost sm', 'btn ghost').replace('event.stopPropagation();', 'closeModal();');
+  openModal(`<div class="eyebrow">${fmtLong(s.start)}</div><h2>${esc(c.name)}</h2>
+    <p><span class="tag">${esc(c.level)}</span> ${b ? (b.status === 'WAITLISTED' ? `<span class="tag warn">Waitlist #${wlPos(b)}</span>` : `<span class="tag ok">${b.status === 'ATTENDED' ? 'Attended' : 'Booked'}</span>`) : ''}</p>
+    <p><b>${fmtTime(s.start)} – ${fmtTime(s.end)}</b> · ${esc(i.name)} · ${esc(s.room || '')}</p>
+    <p class="muted">${esc(c.description)}</p>
+    <p class="small ${r.cls === 'full' ? '' : 'muted'}">${s.status === 'CANCELLED' ? 'This class has been cancelled.' : `${Math.max(0, s.capacity - seated(s.id).length)} of ${s.capacity} spots open${waitlist(s.id).length ? ` · ${waitlist(s.id).length} on waitlist` : ''}`}</p>
+    <div class="actions">${actions}</div>`);
+}
+
+function viewClasses(){
+  return `<section><div class="wrap">
+    <div class="eyebrow">Classes</div><h2>Our <em>classes</em></h2>
+    <div class="cards3" style="margin-top:28px">${st.classTypes.map(c => `
+      <div class="card typecard" style="--c:${c.color}"><span class="tag">${esc(c.level)}</span><h3 style="margin-top:12px">${esc(c.name)}</h3><p class="muted">${esc(c.description)}</p><div class="small muted">${c.duration} min · up to ${c.capacity} people</div>
+      <div style="margin-top:14px"><button class="link" onclick="ui.f={type:'${c.id}',inst:'',level:''};save();go('/schedule')">See times →</button></div></div>`).join('')}
+    </div>
+  </div></section>
+  <section style="padding-top:0"><div class="wrap twocol">
+    <div><div class="eyebrow">01 / Class levels</div><h3>Where to start</h3>
+      <p><b>Foundations</b>: for new students. Learn the principles, the equipment and the breath.</p>
+      <p><b>Level 1</b>: you know the basics and are ready for a steady full-body flow.</p>
+      <p><b>Level 2</b>: faster transitions and more load. At least 10 reformer classes first.</p>
+      <p><b>All levels</b>: welcoming for everyone, with options to make it easier or harder.</p></div>
+    <div><div class="eyebrow">02 / Know before you book</div><h3>Studio policies</h3>
+      <p>Arrive 10 minutes early for your first class. Grip socks are required on the reformer.</p>
+      <p>Book up to ${st.settings.windowDays} days ahead. Cancel at least ${st.settings.cutoffHours} hours before class to free your spot for the waitlist.</p>
+      <p>If a class is full, join the waitlist. When a spot opens, the first person on the list is booked automatically and gets an email.</p></div>
+  </div></section>`;
+}
+function viewInstructors(){ return `<section><div class="wrap"><div class="eyebrow">Instructors</div><h2>Meet the <em>team</em></h2><div class="cards3" style="margin-top:28px">${st.instructors.filter(i => i.active).map(instCard).join('')}</div></div></section>`; }
+function viewContact(){
+  const s = st.settings;
+  return `<section><div class="wrap twocol">
+    <div><div class="eyebrow">Find us</div><h2>Come <em>visit</em></h2><p class="lede">${esc(s.address)}</p><p>${esc(s.phone)}<br>${esc(s.email)}</p><p class="muted">Street parking and a bike rack out front. Changing room and showers on site.</p></div>
+    <div class="photo" style="min-height:320px"><span>Map</span></div>
+  </div></section>`;
+}
+
+function viewLogin(next){
+  return `<section><div class="wrap" style="max-width:440px">
+    <div class="eyebrow">Welcome back</div><h2>Log <em>in</em></h2>
+    <form onsubmit="return doLogin(event, '${next || ''}')">
+      <label>Email</label><input name="email" type="email" required value="mia@example.com">
+      <label>Password</label><input name="password" type="password" required value="demo-password">
+      <div class="actions" style="justify-content:space-between;align-items:center"><button class="btn">Log in</button><button type="button" class="link" onclick="toast('Prototype: a reset link would be emailed')">Forgot password?</button></div>
+    </form>
+    <p class="small muted" style="margin-top:26px">New here? <a href="#/register">Create an account</a>.<br>Prototype: any password works. Use <b>admin@stillpoint.example</b> to log in as admin.</p>
+  </div></section>`;
+}
+function doLogin(e, next){
+  e.preventDefault(); const f = new FormData(e.target);
+  const u = st.users.find(x => x.email.toLowerCase() === String(f.get('email')).toLowerCase().trim());
+  if (!u){ toast('No account with that email', true); return false; }
+  if (!u.active){ toast('This account is deactivated', true); return false; }
+  ui.userId = u.id; save(); toast(`Welcome back, ${u.name.split(' ')[0]}`);
+  afterLogin(next); return false;
+}
+function afterLogin(next){
+  if (ui.pending && !isAdmin()){ const sid = ui.pending; ui.pending = null; save(); go('/schedule'); setTimeout(() => openSession(sid), 50); return; }
+  go(isAdmin() ? '/admin' : next === 'account' ? '/account' : '/schedule');
+}
+function viewRegister(){
+  return `<section><div class="wrap" style="max-width:440px">
+    <div class="eyebrow">Join the studio</div><h2>Create an <em>account</em></h2>
+    <form onsubmit="return doRegister(event)">
+      <label>Full name</label><input name="name" required>
+      <label>Email</label><input name="email" type="email" required>
+      <label>Phone (optional)</label><input name="phone">
+      <label>Password</label><input name="password" type="password" minlength="8" required>
+      <div class="actions"><button class="btn">Create account</button></div>
+    </form>
+    <p class="small muted" style="margin-top:20px">Already have one? <a href="#/login">Log in</a>.</p>
+  </div></section>`;
+}
+function doRegister(e){
+  e.preventDefault(); const f = new FormData(e.target), em = String(f.get('email')).trim();
+  if (st.users.some(u => u.email.toLowerCase() === em.toLowerCase())){ toast('That email already has an account', true); return false; }
+  const u = {id:uid('u'), name:String(f.get('name')).trim(), email:em, phone:String(f.get('phone')||''), role:'MEMBER', active:true, created:Date.now()};
+  st.users.push(u); ui.userId = u.id; log(`New member registered: ${u.name}`); email(u.id, 'Welcome to Still Point Pilates', 'Your account is ready. Book your first class any time.');
+  save(); toast('Account created. Welcome!'); afterLogin(); return false;
+}
+
+/* ---------- member account ---------- */
+function viewAccount(){
+  const u = me(), now = Date.now();
+  const mine = st.bookings.filter(b => b.userId === u.id).map(b => ({b, s:sess(b.sessionId)})).filter(x => x.s);
+  const upcoming = mine.filter(x => x.s.end > now && ['CONFIRMED','WAITLISTED'].includes(x.b.status)).sort((a,b) => a.s.start - b.s.start);
+  const past = mine.filter(x => x.s.end <= now && SEATED.includes(x.b.status)).sort((a,b) => b.s.start - a.s.start);
+  const cancelled = mine.filter(x => x.b.status === 'CANCELLED').sort((a,b) => b.s.start - a.s.start).slice(0, 5);
+  const line = ({b, s}, act) => `<tr><td><b>${esc(type(s.typeId).name)}</b><div class="small muted">${esc(inst(s.instructorId).name)}</div></td><td>${fmtDate(s.start)}<div class="small muted">${fmtTime(s.start)}</div></td><td>${statusTag(b)}</td><td style="text-align:right;white-space:nowrap">${act || ''}</td></tr>`;
+  return `<section style="padding-top:44px"><div class="wrap">
+    <div class="eyebrow">My account</div><h2>Hello, <em>${esc(u.name.split(' ')[0])}</em></h2>
+    <p class="muted">${past.filter(x => x.b.status === 'ATTENDED').length} classes attended · member since ${new Date(u.created).toLocaleDateString('en-US',{month:'long', year:'numeric'})}</p>
+    <h3 style="margin-top:36px">Upcoming</h3>
+    <div class="tablewrap">${upcoming.length ? `<table><tr><th>Class</th><th>When</th><th>Status</th><th></th></tr>${upcoming.map(x => line(x, `${x.b.status === 'CONFIRMED' ? `<button class="btn quiet sm" onclick="downloadIcs('${x.s.id}')">.ics</button> ` : ''}<button class="btn danger sm" onclick="if(confirm('Cancel this booking?'))result(cancelBooking('${x.b.id}'))">${x.b.status === 'WAITLISTED' ? 'Leave' : 'Cancel'}</button>`)).join('')}</table>` : `<p class="muted">Nothing booked yet. <a href="#/schedule">Find a class →</a></p>`}</div>
+    <div class="twocol" style="margin-top:40px">
+      <div><h3>History</h3><div class="tablewrap"><table><tr><th>Class</th><th>When</th><th>Status</th><th></th></tr>${past.map(x => line(x)).join('') || '<tr><td colspan=4 class="muted">No past classes yet.</td></tr>'}${cancelled.map(x => line(x)).join('')}</table></div></div>
+      <div><h3>Profile</h3><form class="card" onsubmit="return saveProfile(event)">
+        <label>Name</label><input name="name" value="${esc(u.name)}" required>
+        <label>Email</label><input name="email" type="email" value="${esc(u.email)}" required>
+        <label>Phone</label><input name="phone" value="${esc(u.phone)}">
+        <label>New password</label><input name="password" type="password" placeholder="Leave blank to keep">
+        <div class="actions"><button class="btn">Save</button></div></form></div>
+    </div>
+  </div></section>`;
+}
+function statusTag(b){
+  const s = sess(b.sessionId);
+  if (s?.status === 'CANCELLED' && b.status === 'CANCELLED') return '<span class="tag bad">Class cancelled</span>';
+  return ({CONFIRMED:'<span class="tag ok">Booked</span>', WAITLISTED:`<span class="tag warn">Waitlist #${wlPos(b)}</span>`, ATTENDED:'<span class="tag ok">Attended</span>', NO_SHOW:'<span class="tag bad">No-show</span>', CANCELLED:'<span class="tag">Cancelled</span>'})[b.status];
+}
+function saveProfile(e){ e.preventDefault(); const f = new FormData(e.target), u = me(); u.name = f.get('name'); u.email = f.get('email'); u.phone = f.get('phone'); save(); render(); toast('Profile saved'); return false; }
+function downloadIcs(sid){
+  const s = sess(sid), f = t => new Date(t).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+  const txt = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Still Point Pilates//Prototype//EN','BEGIN:VEVENT','UID:'+s.id+'@stillpoint','DTSTAMP:'+f(Date.now()),'DTSTART:'+f(s.start),'DTEND:'+f(s.end),'SUMMARY:'+type(s.typeId).name+' with '+inst(s.instructorId).name,'LOCATION:'+st.settings.address,'END:VEVENT','END:VCALENDAR'].join('\r\n');
+  saveFile(txt, 'text/calendar', 'class.ics');
+}
+function saveFile(text, mime, name){ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type:mime})); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
+
+/* ---------- admin ---------- */
+const ADMIN_NAV = [['dashboard','Dashboard'],['schedule','Schedule'],['catalog','Classes & instructors'],['members','Members'],['reports','Reports'],['settings','Settings']];
+function adminShell(page, arg){
+  const views = {dashboard:aDashboard, schedule:aSchedule, session:() => aSession(arg), catalog:aCatalog, members:aMembers, reports:aReports, settings:aSettings};
+  const cur = page === 'session' ? 'schedule' : page;
+  return `<div class="wrap admin"><nav class="side">${ADMIN_NAV.map(([k,l]) => `<a href="#/admin/${k}" class="${cur === k ? 'on' : ''}">${l}</a>`).join('')}</nav><div style="min-width:0">${(views[page] || aDashboard)()}</div></div>`;
+}
+function fillPct(s){ return s.capacity ? Math.round(seated(s.id).length / s.capacity * 100) : 0; }
+function aDashboard(){
+  const now = Date.now(), today = sod(now);
+  const todays = st.sessions.filter(s => sod(s.start) === today).sort((a,b) => a.start - b.start);
+  const next7 = st.sessions.filter(s => s.start > now && s.start < now + 7*DAY && s.status !== 'CANCELLED');
+  const avg = next7.length ? Math.round(next7.reduce((a,s) => a + fillPct(s), 0) / next7.length) : 0;
+  const wl = st.bookings.filter(b => b.status === 'WAITLISTED').length;
+  const wkBookings = st.bookings.filter(b => b.createdAt > now - 7*DAY && b.status !== 'CANCELLED').length;
+  return `<div class="eyebrow">Admin</div><h2>Good ${new Date().getHours() < 12 ? 'morning' : 'afternoon'}</h2>
+    <div class="stats">
+      <div class="card stat"><b>${todays.filter(s => s.status !== 'CANCELLED').length}</b><span>Classes today</span></div>
+      <div class="card stat"><b>${avg}%</b><span>Avg. fill, next 7 days</span></div>
+      <div class="card stat"><b>${wkBookings}</b><span>Bookings, last 7 days</span></div>
+      <div class="card stat"><b>${wl}</b><span>On waitlists now</span></div>
+    </div>
+    <div class="twocol">
+      <div class="card"><h3>Today · ${fmtDate(today)}</h3><div class="tablewrap"><table>${todays.map(s => `<tr style="cursor:pointer" onclick="go('/admin/session/${s.id}')"><td style="white-space:nowrap">${fmtTime(s.start)}</td><td><b>${esc(type(s.typeId).name)}</b><div class="small muted">${esc(inst(s.instructorId).name)}</div></td><td style="width:110px">${s.status === 'CANCELLED' ? '<span class="tag bad">Cancelled</span>' : `<div class="bar"><i style="width:${Math.min(100, fillPct(s))}%"></i></div><div class="small muted">${seated(s.id).length}/${s.capacity}${waitlist(s.id).length ? ` +${waitlist(s.id).length} wl` : ''}</div>`}</td></tr>`).join('') || '<tr><td class="muted">No classes today.</td></tr>'}</table></div></div>
+      <div style="display:grid;gap:18px">
+        <div class="card"><h3>Recent activity</h3><div class="log">${st.log.slice(0, 25).map(l => `<div>${esc(l.text)} <span class="muted small">· ${fmtAgo(l.t)}</span></div>`).join('')}</div></div>
+        <div class="card"><h3>Email outbox <span class="tag">simulated</span></h3><div class="log">${st.outbox.slice(0, 15).map(m => `<div><b>${esc(m.subject)}</b><br><span class="small muted">to ${esc(m.name)} · ${fmtAgo(m.t)}</span></div>`).join('') || '<div class="muted">No emails yet. Book or cancel a class to see them here.</div>'}</div></div>
+      </div>
+    </div>`;
+}
+
+function aSchedule(){
+  const wkStart = addDays(mondayOf(Date.now()), ui.adminWeek * 7), today = sod(Date.now());
+  const days = [...Array(7)].map((_, i) => addDays(wkStart, i));
+  return `<div class="toolbar"><div><div class="eyebrow">Admin</div><h2 style="margin:0">Schedule</h2></div>
+      <div class="weeknav"><button class="btn quiet sm" onclick="ui.adminWeek--;save();render()">←</button><button class="btn quiet sm" onclick="ui.adminWeek=0;save();render()">This week</button><button class="btn quiet sm" onclick="ui.adminWeek++;save();render()">→</button><button class="btn sm" onclick="newClassModal()">+ New class</button></div></div>
+    <p class="muted small">${fmtDate(wkStart)} – ${fmtDate(addDays(wkStart, 6))} · click a class to edit it or see the roster</p>
+    <div class="calwrap"><div class="cal">${days.map(d => `<div class="calcol"><h4 class="${d === today ? 'today' : ''}">${fmtDate(d)}</h4>${st.sessions.filter(s => sod(s.start) === d).sort((a,b) => a.start - b.start).map(s => `
+      <div class="ev ${s.status === 'CANCELLED' ? 'cx' : ''}" style="--c:${type(s.typeId).color}" onclick="go('/admin/session/${s.id}')"><b>${fmtTime(s.start)} ${esc(type(s.typeId).name)}</b>${esc(inst(s.instructorId).name.split(' ')[0])} · ${seated(s.id).length}/${s.capacity}${waitlist(s.id).length ? ` +${waitlist(s.id).length}` : ''}${s.seriesId ? ' ↻' : ''}</div>`).join('') || '<div class="small muted" style="padding:10px">—</div>'}
+      <div style="padding:6px"><button class="link small" style="font-size:10.5px" onclick="newClassModal(${d})">+ Add</button></div></div>`).join('')}</div></div>`;
+}
+function typeOptions(sel){ return st.classTypes.map(c => `<option value="${c.id}" ${c.id === sel ? 'selected' : ''}>${esc(c.name)}</option>`).join(''); }
+function instOptions(sel){ return st.instructors.filter(i => i.active || i.id === sel).map(i => `<option value="${i.id}" ${i.id === sel ? 'selected' : ''}>${esc(i.name)}</option>`).join(''); }
+function newClassModal(day){
+  const d = day || addDays(sod(Date.now()), 1), ct = st.classTypes[0];
+  openModal(`<div class="eyebrow">Schedule</div><h2>New class</h2>
+    <form onsubmit="return createClass(event)">
+      <div class="grid2">
+        <div><label>Class type</label><select name="typeId" onchange="this.form.capacity.value=(st.classTypes.find(c=>c.id===this.value)||{}).capacity">${typeOptions(ct.id)}</select></div>
+        <div><label>Instructor</label><select name="instructorId">${instOptions()}</select></div>
+        <div><label>Date</label><input type="date" name="date" value="${toInputDate(d)}" required></div>
+        <div><label>Start time</label><input type="time" name="time" value="09:00" required></div>
+        <div><label>Capacity</label><input type="number" name="capacity" min="1" value="${ct.capacity}" required></div>
+        <div><label>Room</label><input name="room" value="Studio A"></div>
+      </div>
+      <label class="inline" style="margin-top:16px"><input type="checkbox" name="repeat" onchange="$('rep').style.display=this.checked?'block':'none'"> Repeat weekly</label>
+      <div id="rep" style="display:none" class="card">
+        <div>${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((n,i) => `<label class="inline"><input type="checkbox" name="wd" value="${(i+1)%7}" ${(i+1)%7 === new Date(d).getDay() ? 'checked' : ''}> ${n}</label>`).join('')}</div>
+        <label>Repeat until</label><input type="date" name="until" value="${toInputDate(addDays(d, 56))}">
+      </div>
+      <div class="actions"><button class="btn">Create</button><button type="button" class="btn quiet" onclick="closeModal()">Cancel</button></div>
+    </form>`);
+}
+function createClass(e){
+  e.preventDefault(); const f = new FormData(e.target), ct = type(f.get('typeId'));
+  const base = {typeId:f.get('typeId'), instructorId:f.get('instructorId'), capacity:+f.get('capacity'), room:f.get('room'), status:'SCHEDULED'};
+  const time = f.get('time'), first = fromInputs(f.get('date'), time);
+  const mk = (start, seriesId) => st.sessions.push({...base, id:uid('s'), start, end:start + ct.duration*6e4, seriesId});
+  if (f.get('repeat')){
+    const wds = f.getAll('wd').map(Number), until = fromInputs(f.get('until'), '23:59');
+    if (!wds.length){ toast('Pick at least one weekday', true); return false; }
+    if (until < first){ toast('"Repeat until" must be after the start date', true); return false; }
+    const ser = {id:uid('r'), ...base, weekdays:wds, time, from:first, until};
+    st.series.push(ser);
+    let n = 0;
+    for (let d = sod(first); d <= until; d = addDays(d, 1)) if (wds.includes(new Date(d).getDay())){ mk(fromInputs(toInputDate(d), time), ser.id); n++; }
+    log(`Admin created a weekly series: ${ct.name}, ${n} classes`); toast(`Created ${n} classes`);
+  } else { mk(first, null); log(`Admin added ${ct.name} on ${fmtDate(first)}`); toast('Class created'); }
+  st.sessions.sort((a,b) => a.start - b.start);
+  ui.adminWeek = Math.floor((sod(first) - mondayOf(Date.now())) / (7*DAY));
+  save(); closeModal(); render(); return false;
+}
+
+function aSession(sid){
+  const s = sess(sid); if (!s) return '<p>Class not found.</p>';
+  const c = type(s.typeId), seatedB = seated(sid).sort((a,b) => user(a.userId).name.localeCompare(user(b.userId).name)), wl = waitlist(sid);
+  const started = s.start <= Date.now() + 30*6e4;
+  const notOn = st.users.filter(u => u.role === 'MEMBER' && u.active && !myBooking(u.id, sid)).sort((a,b) => a.name.localeCompare(b.name));
+  return `<a class="link" href="#/admin/schedule">← Schedule</a>
+    <div class="toolbar" style="margin-top:18px"><div><div class="eyebrow">${fmtLong(s.start)}</div><h2 style="margin:0">${esc(c.name)} · ${fmtTime(s.start)}</h2>
+      <div class="muted">${esc(inst(s.instructorId).name)} · ${esc(s.room || '')} · ${seatedB.length}/${s.capacity} booked${wl.length ? ` · ${wl.length} waitlisted` : ''} ${s.seriesId ? '· <span class="tag">Weekly series</span>' : ''} ${s.status === 'CANCELLED' ? '<span class="tag bad">Cancelled</span>' : ''}</div></div>
+      <div class="actions" style="margin:0"><button class="btn quiet sm" onclick="duplicateSession('${sid}')">Duplicate +1 week</button>${s.status !== 'CANCELLED' ? `<button class="btn danger sm" onclick="if(confirm('Cancel this class? Everyone booked will be emailed.')){cancelSession('${sid}');save();render();toast('Class cancelled, members notified')}">Cancel class</button>` : ''}</div></div>
+    <div class="twocol" style="margin-top:22px">
+      <div class="card"><h3>Roster</h3>
+        <div class="tablewrap"><table><tr><th>Member</th><th>Status</th><th></th></tr>${seatedB.map(b => `<tr><td>${esc(user(b.userId).name)}<div class="small muted">${esc(user(b.userId).email)}</div></td><td>${statusTag(b)}</td><td style="text-align:right;white-space:nowrap">
+          ${started ? `<button class="btn ${b.status === 'ATTENDED' ? '' : 'quiet'} sm" onclick="mark('${b.id}','ATTENDED')">Attended</button> <button class="btn ${b.status === 'NO_SHOW' ? 'danger' : 'quiet'} sm" onclick="mark('${b.id}','NO_SHOW')">No-show</button>` : ''}
+          ${s.start > Date.now() ? `<button class="btn quiet sm" onclick="if(confirm('Remove ${esc(user(b.userId).name).replace(/'/g, '')} from this class?'))result(cancelBooking('${b.id}',{admin:true}))">Remove</button>` : ''}</td></tr>`).join('') || '<tr><td class="muted" colspan=3>No one booked yet.</td></tr>'}</table></div>
+        ${!started ? '<p class="small muted">Attendance check-in opens 30 minutes before class.</p>' : ''}
+        <h3 style="margin-top:24px">Waitlist</h3>
+        <table>${wl.map((b, i) => `<tr><td>#${i+1} ${esc(user(b.userId).name)}</td><td style="text-align:right"><button class="btn quiet sm" onclick="result(cancelBooking('${b.id}',{admin:true}))">Remove</button></td></tr>`).join('') || '<tr><td class="muted">Empty</td></tr>'}</table>
+        ${s.status !== 'CANCELLED' ? `<h3 style="margin-top:24px">Add a member</h3>
+        <form onsubmit="return adminAdd(event,'${sid}')" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><select name="u" style="flex:1;min-width:180px">${notOn.map(u => `<option value="${u.id}">${esc(u.name)}</option>`).join('')}</select><label class="inline" style="margin:0"><input type="checkbox" name="force"> Over capacity</label><button class="btn sm">Add</button></form>` : ''}
+      </div>
+      <div class="card"><h3>Edit class</h3>
+        <form onsubmit="return saveSession(event,'${sid}')">
+          <label>Class type</label><select name="typeId">${typeOptions(s.typeId)}</select>
+          <label>Instructor</label><select name="instructorId">${instOptions(s.instructorId)}</select>
+          <div class="grid2"><div><label>Date</label><input type="date" name="date" value="${toInputDate(s.start)}"></div><div><label>Time</label><input type="time" name="time" value="${toInputTime(s.start)}"></div></div>
+          <div class="grid2"><div><label>Capacity</label><input type="number" name="capacity" min="1" value="${s.capacity}"></div><div><label>Room</label><input name="room" value="${esc(s.room || '')}"></div></div>
+          ${s.seriesId ? `<label class="inline" style="margin-top:14px"><input type="checkbox" name="all"> Apply instructor, capacity &amp; room to all future classes in this series</label>` : ''}
+          <div class="actions"><button class="btn" ${s.status === 'CANCELLED' ? 'disabled' : ''}>Save changes</button></div>
+          <p class="small muted">Booked members get an email if the time or instructor changes. Raising capacity moves people off the waitlist.</p>
+        </form></div>
+    </div>`;
+}
+function mark(bid, status){ const b = byId(st.bookings, bid); b.status = b.status === status ? 'CONFIRMED' : status; save(); render(); }
+function adminAdd(e, sid){ e.preventDefault(); const f = new FormData(e.target); if (!f.get('u')) return false; result(book(f.get('u'), sid, {admin:true, force:!!f.get('force')})); return false; }
+function saveSession(e, sid){
+  e.preventDefault(); const f = new FormData(e.target), s = sess(sid);
+  const ct = type(f.get('typeId')), start = fromInputs(f.get('date'), f.get('time'));
+  const changed = start !== s.start || f.get('instructorId') !== s.instructorId;
+  Object.assign(s, {typeId:f.get('typeId'), instructorId:f.get('instructorId'), capacity:+f.get('capacity'), room:f.get('room'), start, end:start + ct.duration*6e4});
+  if (f.get('all') && s.seriesId) st.sessions.filter(x => x.seriesId === s.seriesId && x.start > Date.now() && x.status !== 'CANCELLED').forEach(x => { Object.assign(x, {instructorId:s.instructorId, capacity:s.capacity, room:s.room}); promote(x.id); });
+  if (changed) st.bookings.filter(b => b.sessionId === sid && ['CONFIRMED','WAITLISTED'].includes(b.status)).forEach(b => email(b.userId, `Class updated: ${ct.name}`, `Your class is now ${sessLabel(s)} with ${inst(s.instructorId).name}.`));
+  st.sessions.sort((a,b) => a.start - b.start);
+  log(`Admin edited ${sessLabel(s)}`); promote(sid); save(); render(); toast('Saved'); return false;
+}
+function duplicateSession(sid){
+  const s = sess(sid), n = {...s, id:uid('s'), start:s.start + 7*DAY, end:s.end + 7*DAY, status:'SCHEDULED', seriesId:null};
+  st.sessions.push(n); st.sessions.sort((a,b) => a.start - b.start); log(`Admin duplicated ${sessLabel(s)} to ${fmtDate(n.start)}`); save(); toast('Duplicated to next week'); go('/admin/session/' + n.id);
+}
+
+function aCatalog(){
+  return `<div class="toolbar"><div><div class="eyebrow">Admin</div><h2 style="margin:0">Classes &amp; instructors</h2></div></div>
+    <div class="card"><div class="toolbar"><h3 style="margin:0">Class types</h3><button class="btn sm" onclick="typeModal()">+ Class type</button></div>
+      <div class="tablewrap"><table><tr><th>Name</th><th>Level</th><th>Length</th><th>Capacity</th><th></th></tr>${st.classTypes.map(c => `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${c.color};margin-right:8px"></span><b>${esc(c.name)}</b></td><td>${esc(c.level)}</td><td>${c.duration} min</td><td>${c.capacity}</td><td style="text-align:right;white-space:nowrap"><button class="btn quiet sm" onclick="typeModal('${c.id}')">Edit</button> <button class="btn danger sm" onclick="deleteType('${c.id}')">Delete</button></td></tr>`).join('')}</table></div></div>
+    <div class="card" style="margin-top:18px"><div class="toolbar"><h3 style="margin:0">Instructors</h3><button class="btn sm" onclick="instModal()">+ Instructor</button></div>
+      <div class="tablewrap"><table><tr><th>Name</th><th>Upcoming classes</th><th>Status</th><th></th></tr>${st.instructors.map(i => `<tr><td><b>${esc(i.name)}</b><div class="small muted">${esc(i.bio).slice(0, 70)}…</div></td><td>${upcomingSessions(s => s.instructorId === i.id).length}</td><td>${i.active ? '<span class="tag ok">Active</span>' : '<span class="tag">Inactive</span>'}</td><td style="text-align:right;white-space:nowrap"><button class="btn quiet sm" onclick="instModal('${i.id}')">Edit</button> <button class="btn quiet sm" onclick="toggleInst('${i.id}')">${i.active ? 'Deactivate' : 'Activate'}</button></td></tr>`).join('')}</table></div></div>`;
+}
+function typeModal(id){
+  const c = id ? type(id) : {name:'', level:'All levels', duration:50, capacity:8, color:'#B4694A', description:''};
+  openModal(`<h2>${id ? 'Edit' : 'New'} class type</h2><form onsubmit="return saveType(event,'${id || ''}')">
+    <label>Name</label><input name="name" value="${esc(c.name)}" required>
+    <div class="grid2"><div><label>Level</label><input name="level" value="${esc(c.level)}" list="lvls" required><datalist id="lvls">${levels().map(l => `<option>${esc(l)}</option>`).join('')}</datalist></div><div><label>Color</label><input type="color" name="color" value="${c.color}" style="height:42px;padding:4px"></div>
+    <div><label>Length (min)</label><input type="number" name="duration" min="15" value="${c.duration}"></div><div><label>Default capacity</label><input type="number" name="capacity" min="1" value="${c.capacity}"></div></div>
+    <label>Description</label><textarea name="description" rows="3">${esc(c.description)}</textarea>
+    <div class="actions"><button class="btn">Save</button></div></form>`);
+}
+function saveType(e, id){
+  e.preventDefault(); const f = Object.fromEntries(new FormData(e.target)); f.duration = +f.duration; f.capacity = +f.capacity;
+  if (id) Object.assign(type(id), f); else st.classTypes.push({id:uid('c'), ...f});
+  save(); closeModal(); render(); toast('Saved'); return false;
+}
+function deleteType(id){
+  const n = st.sessions.filter(s => s.typeId === id && s.start > Date.now() && s.status !== 'CANCELLED').length;
+  if (n){ toast(`Can't delete: ${n} upcoming classes use this type. Cancel or change them first.`, true); return; }
+  if (!confirm('Delete this class type?')) return;
+  st.classTypes = st.classTypes.filter(c => c.id !== id); save(); render(); toast('Deleted');
+}
+function instModal(id){
+  const i = id ? inst(id) : {name:'', bio:''};
+  openModal(`<h2>${id ? 'Edit' : 'New'} instructor</h2><form onsubmit="return saveInst(event,'${id || ''}')">
+    <label>Name</label><input name="name" value="${esc(i.name)}" required>
+    <label>Bio</label><textarea name="bio" rows="4">${esc(i.bio)}</textarea>
+    <label>Photo</label><input type="file" accept="image/*" disabled><p class="small muted">Photo upload comes with the real build.</p>
+    <div class="actions"><button class="btn">Save</button></div></form>`);
+}
+function saveInst(e, id){ e.preventDefault(); const f = Object.fromEntries(new FormData(e.target)); if (id) Object.assign(inst(id), f); else st.instructors.push({id:uid('i'), active:true, ...f}); save(); closeModal(); render(); toast('Saved'); return false; }
+function toggleInst(id){
+  const i = inst(id), n = upcomingSessions(s => s.instructorId === id).length;
+  if (i.active && n && !confirm(`${i.name} teaches ${n} upcoming classes. Deactivate anyway? (Their classes stay on the schedule; reassign them from the Schedule page.)`)) return;
+  i.active = !i.active; save(); render();
+}
+
+function aMembers(){
+  return `<div class="toolbar"><div><div class="eyebrow">Admin</div><h2 style="margin:0">Members</h2></div><input id="msearch" placeholder="Search name or email" style="max-width:280px" oninput="ui.q=this.value;$('mtable').innerHTML=memberRows()" value="${esc(ui.q || '')}"></div>
+    <div class="card"><div class="tablewrap"><table><thead><tr><th>Member</th><th>Upcoming</th><th>Attended</th><th>No-shows</th><th>Role</th><th></th></tr></thead><tbody id="mtable">${memberRows()}</tbody></table></div></div>`;
+}
+function memberRows(){
+  const q = (ui.q || '').toLowerCase();
+  return st.users.filter(u => !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)).sort((a,b) => a.name.localeCompare(b.name)).map(u => {
+    const bs = st.bookings.filter(b => b.userId === u.id);
+    const up = bs.filter(b => ['CONFIRMED','WAITLISTED'].includes(b.status) && sess(b.sessionId)?.start > Date.now()).length;
+    return `<tr style="${u.active ? '' : 'opacity:.5'}"><td><b>${esc(u.name)}</b><div class="small muted">${esc(u.email)}</div></td><td>${up}</td><td>${bs.filter(b => b.status === 'ATTENDED').length}</td><td>${bs.filter(b => b.status === 'NO_SHOW').length}</td><td>${u.role === 'ADMIN' ? '<span class="tag warn">Admin</span>' : 'Member'}</td>
+      <td style="text-align:right;white-space:nowrap"><button class="btn quiet sm" onclick="memberModal('${u.id}')">History</button> ${u.id === ui.userId ? '' : `<button class="btn quiet sm" onclick="toggleRole('${u.id}')">${u.role === 'ADMIN' ? 'Make member' : 'Make admin'}</button> <button class="btn quiet sm" onclick="toggleActive('${u.id}')">${u.active ? 'Deactivate' : 'Activate'}</button>`}</td></tr>`;
+  }).join('') || '<tr><td colspan=6 class="muted">No matches.</td></tr>';
+}
+function memberModal(id){
+  const u = user(id), bs = st.bookings.filter(b => b.userId === id).map(b => ({b, s:sess(b.sessionId)})).filter(x => x.s).sort((a,b) => b.s.start - a.s.start);
+  openModal(`<div class="eyebrow">Member</div><h2>${esc(u.name)}</h2><p class="muted">${esc(u.email)}${u.phone ? ' · ' + esc(u.phone) : ''}<br>Joined ${new Date(u.created).toLocaleDateString()}</p>
+    <div class="tablewrap" style="max-height:50vh;overflow:auto"><table><tr><th>Class</th><th>When</th><th>Status</th></tr>${bs.map(({b, s}) => `<tr><td>${esc(type(s.typeId).name)}</td><td>${fmtDate(s.start)} ${fmtTime(s.start)}</td><td>${statusTag(b)}</td></tr>`).join('') || '<tr><td class="muted">No bookings yet.</td></tr>'}</table></div>`);
+}
+function toggleRole(id){ const u = user(id); if (!confirm(`${u.role === 'ADMIN' ? 'Remove admin access from' : 'Give admin access to'} ${u.name}?`)) return; u.role = u.role === 'ADMIN' ? 'MEMBER' : 'ADMIN'; log(`${u.name} is now ${u.role === 'ADMIN' ? 'an admin' : 'a member'}`); save(); $('mtable').innerHTML = memberRows(); }
+function toggleActive(id){
+  const u = user(id);
+  if (u.active){
+    if (!confirm(`Deactivate ${u.name}? Their upcoming bookings will be cancelled.`)) return;
+    st.bookings.filter(b => b.userId === id && ['CONFIRMED','WAITLISTED'].includes(b.status) && sess(b.sessionId)?.start > Date.now()).forEach(b => cancelBooking(b.id, {admin:true}));
+  }
+  u.active = !u.active; log(`${u.name} ${u.active ? 'reactivated' : 'deactivated'}`); save(); $('mtable').innerHTML = memberRows();
+}
+
+function aReports(){
+  const past = st.sessions.filter(s => s.end < Date.now() && s.status !== 'CANCELLED');
+  const agg = (keyFn, nameFn) => {
+    const m = {};
+    past.forEach(s => { const k = keyFn(s); m[k] = m[k] || {n:0, fill:0, att:0, ns:0, seats:0}; const bs = seated(s.id); m[k].n++; m[k].fill += bs.length / s.capacity; m[k].att += bs.filter(b => b.status === 'ATTENDED').length; m[k].ns += bs.filter(b => b.status === 'NO_SHOW').length; m[k].seats += bs.length; });
+    return Object.entries(m).map(([k, v]) => `<tr><td><b>${esc(nameFn(k))}</b></td><td>${v.n}</td><td style="width:160px"><div class="bar"><i style="width:${Math.round(v.fill / v.n * 100)}%"></i></div><span class="small muted">${Math.round(v.fill / v.n * 100)}%</span></td><td>${v.seats ? Math.round(v.att / v.seats * 100) : 0}%</td><td>${v.ns}</td></tr>`).join('');
+  };
+  const head = '<tr><th></th><th>Classes held</th><th>Avg. fill</th><th>Attendance</th><th>No-shows</th></tr>';
+  return `<div class="toolbar"><div><div class="eyebrow">Admin</div><h2 style="margin:0">Reports</h2></div><button class="btn sm" onclick="exportCsv()">Export bookings CSV</button></div>
+    <p class="muted small">Classes that have already happened (${past.length} in the demo data).</p>
+    <div class="card"><h3>By class type</h3><div class="tablewrap"><table>${head}${agg(s => s.typeId, k => type(k).name)}</table></div></div>
+    <div class="card" style="margin-top:18px"><h3>By instructor</h3><div class="tablewrap"><table>${head}${agg(s => s.instructorId, k => inst(k).name)}</table></div></div>`;
+}
+function exportCsv(){
+  const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const rows = [['Class','Instructor','Start','Member','Email','Status','Booked at']].concat(st.bookings.map(b => { const s = sess(b.sessionId), u = user(b.userId); return s && u ? [type(s.typeId).name, inst(s.instructorId).name, new Date(s.start).toISOString(), u.name, u.email, b.status, new Date(b.createdAt).toISOString()] : null; }).filter(Boolean));
+  saveFile(rows.map(r => r.map(q).join(',')).join('\n'), 'text/csv', 'bookings.csv');
+}
+
+function aSettings(){
+  const s = st.settings;
+  return `<div class="eyebrow">Admin</div><h2>Settings</h2>
+    <form class="card" onsubmit="return saveSettings(event)" style="max-width:640px">
+      <h3>Studio</h3>
+      <label>Studio name</label><input name="name" value="${esc(s.name)}">
+      <label>Tagline</label><input name="tagline" value="${esc(s.tagline)}">
+      <label>Address</label><input name="address" value="${esc(s.address)}">
+      <div class="grid2"><div><label>Email</label><input name="email" value="${esc(s.email)}"></div><div><label>Phone</label><input name="phone" value="${esc(s.phone)}"></div></div>
+      <h3 style="margin-top:26px">Booking rules</h3>
+      <div class="grid2">
+        <div><label>Booking opens (days ahead)</label><input type="number" min="1" name="windowDays" value="${s.windowDays}"></div>
+        <div><label>Cancellation cutoff (hours)</label><input type="number" min="0" name="cutoffHours" value="${s.cutoffHours}"></div>
+        <div><label>Max upcoming bookings per member</label><input type="number" min="1" name="maxActive" value="${s.maxActive}"></div>
+        <div><label>Time zone</label><select disabled><option>${Intl.DateTimeFormat().resolvedOptions().timeZone}</option></select></div>
+      </div>
+      <div class="actions"><button class="btn">Save settings</button></div>
+    </form>`;
+}
+function saveSettings(e){ e.preventDefault(); const f = Object.fromEntries(new FormData(e.target)); ['windowDays','cutoffHours','maxActive'].forEach(k => f[k] = +f[k]); Object.assign(st.settings, f); log('Admin updated studio settings'); save(); render(); toast('Settings saved'); return false; }
+
+/* ---------- theme presets ---------- */
+const THEMES = {
+  sand:{label:'Sand & Clay', note:'Warm neutrals, Cormorant + Inter', vars:{'--bg':'#FAF7F2','--surface':'#FFFFFF','--soft':'#F1E9DF','--text':'#2B2724','--muted':'#7A716A','--line':'#E7DFD5','--accent':'#B4694A','--accent-ink':'#FFFFFF','--font-head':"'Cormorant Garamond', Georgia, serif",'--font-body':"'Inter', system-ui, sans-serif",'--radius':'4px','--btn-radius':'999px','--head-weight':'500'}},
+  sage:{label:'Sage Studio', note:'Soft greens, Fraunces + DM Sans', vars:{'--bg':'#F6F6F1','--surface':'#FFFFFF','--soft':'#E6EBE1','--text':'#25302A','--muted':'#6B756D','--line':'#DDE3D8','--accent':'#5F7757','--accent-ink':'#FFFFFF','--font-head':"'Fraunces', Georgia, serif",'--font-body':"'DM Sans', system-ui, sans-serif",'--radius':'12px','--btn-radius':'12px','--head-weight':'400'}},
+  noir:{label:'Boutique Noir', note:'Black, cream & brass, Playfair + Jost', vars:{'--bg':'#F7F3EC','--surface':'#FFFDF9','--soft':'#EDE5D8','--text':'#151515','--muted':'#6E6860','--line':'#E2D9CB','--accent':'#151515','--accent-ink':'#F7F3EC','--font-head':"'Playfair Display', Georgia, serif",'--font-body':"'Jost', system-ui, sans-serif",'--radius':'0px','--btn-radius':'0px','--head-weight':'400'}},
+};
+function applyTheme(){ const t = THEMES[ui.theme] || THEMES.sand; Object.entries(t.vars).forEach(([k, v]) => document.documentElement.style.setProperty(k, v)); }
+function renderTheme(){
+  $('themePanel').innerHTML = `<b>Theme presets</b><div class="small muted">Prototype only. The chosen one becomes the design tokens.</div>${Object.entries(THEMES).map(([k, t]) => `<button class="preset ${ui.theme === k ? 'on' : ''}" onclick="ui.theme='${k}';save();applyTheme();renderTheme()"><span class="sw">${['--bg','--soft','--accent','--text'].map(v => `<i style="background:${t.vars[v]}"></i>`).join('')}</span><span><b style="font-family:${t.vars['--font-head']};font-size:18px;font-weight:500">${t.label}</b><br><span class="small muted">${t.note}</span></span></button>`).join('')}`;
+}
+
+/* ---------- boot ---------- */
+load(); applyTheme(); render();
+</script>
+</body>
+</html>
